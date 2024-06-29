@@ -1,11 +1,14 @@
 FetchContent_Declare(
   LlamaCpp
   GIT_REPOSITORY "https://github.com/ggerganov/llama.cpp.git"
-  GIT_TAG "621e86b331f8b0e71f79fd82a4ae1cd54c3e4396"
+  GIT_TAG "e57dc62057d41211ac018056c19c02cd544694df"
 )
+
+set(GGML_OPENMP FALSE CACHE BOOL "OpenMP off for compatibility.")
 FetchContent_MakeAvailable(LlamaCpp)
+
 set(LlamaCpp_SOURCE_DIR "${llamacpp_SOURCE_DIR}" PARENT_SCOPE)
-set(LlamaCpp_INCLUDE_DIRS "${llamacpp_SOURCE_DIR}" PARENT_SCOPE)
+set(LlamaCpp_INCLUDE_DIRS "${llamacpp_SOURCE_DIR}/include" PARENT_SCOPE)
 set(LlamaCpp_LIBRARIES "$<TARGET_NAME:llama>" PARENT_SCOPE)
 
 if (LLAMA_OPENBLAS_ON)

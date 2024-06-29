@@ -71,14 +71,20 @@ Vocabulary::detokenize_to(FildeshO* out, Token_id token_id) const
   const size_t attempt_size = allocated_size_of_FildeshO(out) - out->size;
   char* s = grow_FildeshO(out, attempt_size);
 
-  int n = llama_token_to_piece(model_, token_id, s, attempt_size);
+  int n = llama_token_to_piece(
+      model_, token_id,
+      s, attempt_size,
+      /*special=*/false);
   if (n >= 0) {
     out->size -= (attempt_size - n);
   } else {
     n = -n;
     out->size -= attempt_size;
     s = grow_FildeshO(out, n);
-    n = llama_token_to_piece(model_, token_id, s, n);
+    n = llama_token_to_piece(
+        model_, token_id,
+        s, n,
+        /*special=*/false);
   }
 }
 
