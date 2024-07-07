@@ -1,20 +1,20 @@
-(((chat_prefixes))
+((chat_prefixes)
  (m
-   (prefix "<|im_start|>user\n")
-   (suffix "<|im_end|>\n"))
+  (prefix "<|im_start|>user\n")
+  (suffix "<|im_end|>\n"))
  (m
-   (prefix "<|im_start|>assistant\n")
-   (suffix "<|im_end|>\n")
+  (prefix "<|im_start|>assistant\n")
+  (suffix "<|im_end|>\n")
  )
 )
 (substitution
-  ; Uncomment the next 2 lines if your model doesn't support ChatML tokens.
-  ;(bos_token_alias "<|im_start|>")
-  ;(eos_token_alias "<|im_end|>")
-  ((special_tokens)
-    (() (name "<|im_start|>"))
-    (() (name "<|im_end|>"))
-  )
+ ; Uncomment the next 2 lines if your model doesn't support ChatML tokens.
+ ;(bos_token_alias "<|im_start|>")
+ ;(eos_token_alias "<|im_end|>")
+ ((special_tokens)
+  (() (name "<|im_start|>"))
+  (() (name "<|im_end|>"))
+ )
 )
 
 (x_priming "priming.txt")

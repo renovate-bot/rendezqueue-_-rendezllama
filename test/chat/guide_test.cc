@@ -47,14 +47,14 @@ the_test(llama_model* model)
   assert(guide.maybe_erase_trailing_message_prefix());
 
   *in = FildeshX_of_strlit("\
-    (((chat_prefixes))\n\
+    ((chat_prefixes)\n\
      (m (prefix \"A:\") (suffix \"</s>\\n###\\n\"))\n\
      (m (prefix \"B:\"))\n\
      (m (prefix \"C:\"))\n\
      (m (prefix \"D:\") (suffix \"</s>\\n\"))\n\
     )\n\
     (substitution\n\
-      (eos_token_alias \"</s>\")\n\
+     (eos_token_alias \"</s>\")\n\
     )\n\
     ");
   good = rendezllama::slurp_sxpb_initialize_options_close_FildeshX(in, opt, "");

@@ -1,15 +1,15 @@
-(((chat_prefixes))
+((chat_prefixes)
  (m
-   (prefix "### Instruction:\n")
-   (suffix "\n\n"))
+  (prefix "### Instruction:\n")
+  (suffix "\n\n"))
  (m
-   (prefix "### Response:\n")
-   ; Model must be fine-tuned to end the response with EOS token.
-   (suffix "</s>\n\n")
+  (prefix "### Response:\n")
+  ; Model must be fine-tuned to end the response with EOS token.
+  (suffix "</s>\n\n")
  )
 )
 (substitution
-  (eos_token_alias "</s>")
+ (eos_token_alias "</s>")
 )
 ; Lines are considered as sentences.
 ((sentence_terminals) "\n")

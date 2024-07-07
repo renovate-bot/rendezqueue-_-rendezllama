@@ -1,20 +1,20 @@
 (protagonist "USER")
 (confidant "ASSISTANT")
-(((chat_prefixes))
+((chat_prefixes)
  (m
-   (prefix "{{user}}:")
-   (suffix "</s>")
+  (prefix "{{user}}:")
+  (suffix "</s>")
  )
  (m
-   (prefix " {{char}}:")
-   ; Model must be fine-tuned to end the response with EOS token.
-   (suffix "</s>")
+  (prefix " {{char}}:")
+  ; Model must be fine-tuned to end the response with EOS token.
+  (suffix "</s>")
  )
 )
 (substitution
-  (eos_token_alias "</s>")
-  (protagonist_alias "{{user}}")
-  (confidant_alias "{{char}}")
+ (eos_token_alias "</s>")
+ (protagonist_alias "{{user}}")
+ (confidant_alias "{{char}}")
 )
 (x_priming "priming.txt")
 (x_rolling "rolling.txt")

@@ -17,7 +17,7 @@ chat_prefixes_parse_test()
   bool all_good;
 
   *in = FildeshX_of_strlit(
-      "(((chat_prefixes)) \
+      "((chat_prefixes) \
       \"{{user}}:\" \
       \"{{char}} feels:\" \
       \"{{char}} wants:\" \
