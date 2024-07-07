@@ -238,7 +238,7 @@ rendezllama::parse_options(rendezllama::ChatOptions& opt, int argc, char** argv)
   opt.seed = INT_MAX & time(NULL);
 
   opt.antiprompts = opt.sentence_terminals;
-  opt.antiprompts.push_back("\n");
+  opt.antiprompts.insert("\n");
 
   for (argi = 1; exstatus == 0 && argi < argc; ++argi) {
     if (false) {
@@ -590,13 +590,13 @@ slurp_sxpb_options_close_FildeshX(
     for (it = first_at_FildeshSxpb(sxpb, it); !nullish_FildeshSxpbIT(it);
          it = next_at_FildeshSxpb(sxpb, it)) {
       s = str_value_at_FildeshSxpb(sxpb, it);
-      opt.sentence_terminals.push_back(s);
+      opt.sentence_terminals.insert(s);
       if (s[0] == '\n' && s[1] == '\0') {found = true;}
     }
 
     opt.antiprompts = opt.sentence_terminals;
     if (!found) {
-      opt.antiprompts.push_back("\n");
+      opt.antiprompts.insert("\n");
     }
   }
 

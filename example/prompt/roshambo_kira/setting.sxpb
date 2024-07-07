@@ -1,8 +1,8 @@
 (protagonist "L")
 (confidant "Kira")
 (substitution
-  (protagonist_alias "{{user}}")
-  (confidant_alias "{{char}}")
+ (protagonist_alias "{{user}}")
+ (confidant_alias "{{char}}")
 )
 (x_priming "priming.txt")
 (x_rolling "rolling.txt")

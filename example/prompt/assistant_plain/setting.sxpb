@@ -1,8 +1,8 @@
 (protagonist "User")
 (confidant "Assistant")
 (substitution
-  (protagonist_alias "{{user}}")
-  (confidant_alias "{{char}}")
+ (protagonist_alias "{{user}}")
+ (confidant_alias "{{char}}")
 )
 (x_priming "../assistant_vicuna/priming.txt")
 (x_rolling "../assistant_vicuna/rolling.txt")

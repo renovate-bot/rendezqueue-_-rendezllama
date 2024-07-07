@@ -3,6 +3,7 @@
 #include <ostream>
 #include <string>
 #include <tuple>
+#include <set>
 #include <vector>
 
 #include "llama.h"
@@ -18,7 +19,7 @@ class Vocabulary;
 const std::string&
 antiprompt_suffix(
     std::string_view text,
-    const std::vector<std::string>& antiprompts);
+    const std::set<std::string>& antiprompts);
 void
 augment_tokenize_chat_input(
     ChatGuide& chat_guide,

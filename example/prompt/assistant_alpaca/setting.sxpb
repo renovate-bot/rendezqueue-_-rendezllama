@@ -12,7 +12,7 @@
  (eos_token_alias "</s>")
 )
 ; Lines are considered as sentences.
-((sentence_terminals) "\n")
+(sentence_terminals () "\n")
 ; Max 10 lines at a time.
 (sentence_limit 10)
 (sentence_token_limit 1000)

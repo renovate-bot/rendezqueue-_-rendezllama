@@ -3,6 +3,7 @@
 
 #include <string>
 #include <ostream>
+#include <set>
 #include <vector>
 
 struct FildeshX;
@@ -69,8 +70,8 @@ struct ChatOptions {
   bool mlock_on = false;
   bool mmap_on = true;
   bool coprocess_mode_on = false;
-  std::vector<std::string> sentence_terminals = {"!", ".", "?", "…"};
-  std::vector<std::string> antiprompts;
+  std::set<std::string> sentence_terminals = {"!", ".", "?", "…"};
+  std::set<std::string> antiprompts;
   // Can't set these yet.
   bool verbose_prompt = false;
 };

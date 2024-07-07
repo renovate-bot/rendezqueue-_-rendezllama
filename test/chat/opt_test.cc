@@ -55,7 +55,7 @@ sentence_terminals_parse_test()
   rendezllama::ChatOptions opt;
   FildeshX in[1];
   *in = FildeshX_of_strlit(
-      "((sentence_terminals) \
+      "(sentence_terminals () \
       \"\\n\" \
       \"\\\"\" \
       \".\" \
@@ -63,9 +63,11 @@ sentence_terminals_parse_test()
   bool all_good = rendezllama::slurp_sxpb_dynamic_options_close_FildeshX(in, opt);
   assert(all_good);
   assert(opt.sentence_terminals.size() == 3);
-  assert(opt.sentence_terminals[0] == "\n");
-  assert(opt.sentence_terminals[1] == "\"");
-  assert(opt.sentence_terminals[2] == ".");
+  // Insert 3 and expect that they add nothing new.
+  opt.sentence_terminals.insert("\n");
+  opt.sentence_terminals.insert("\"");
+  opt.sentence_terminals.insert(".");
+  assert(opt.sentence_terminals.size() == 3);
 }
 
 int main()

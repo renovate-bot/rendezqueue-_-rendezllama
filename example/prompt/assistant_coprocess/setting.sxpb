@@ -1,7 +1,7 @@
 ; Bot name is replaced in the prompt.
 (confidant "Banterbot")
 (substitution
-  (confidant_alias "{{char}}")
+ (confidant_alias "{{char}}")
 )
 
 (thread_count 2)

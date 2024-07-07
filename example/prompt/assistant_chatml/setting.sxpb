@@ -11,7 +11,7 @@
  ; Uncomment the next 2 lines if your model doesn't support ChatML tokens.
  ;(bos_token_alias "<|im_start|>")
  ;(eos_token_alias "<|im_end|>")
- ((special_tokens)
+ (special_tokens (())
   (() (name "<|im_start|>"))
   (() (name "<|im_end|>"))
  )

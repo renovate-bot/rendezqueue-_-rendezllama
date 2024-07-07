@@ -23,7 +23,7 @@ using rendezllama::Vocabulary;
   const std::string&
 rendezllama::antiprompt_suffix(
     std::string_view text,
-    const std::vector<std::string>& antiprompts)
+    const std::set<std::string>& antiprompts)
 {
   static const std::string empty_string;
   for (const std::string& s : antiprompts) {
