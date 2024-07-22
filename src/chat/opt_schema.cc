@@ -34,8 +34,6 @@ rendezllama::options_sxproto_schema()
     {"coprocess_mode_on", FILL_DEFAULT_FildeshSxprotoField_BOOL},
     {"frequency_penalty", FILL_DEFAULT_FildeshSxprotoField_FLOAT},
     {"linespace_on", FILL_DEFAULT_FildeshSxprotoField_BOOL},
-    {"lora_base_model", FILL_FildeshSxprotoField_STRING(1, FILENAME_MAX)},
-    {"lora_base", FILL_DEFAULT_FildeshSxprotoField_ALIAS},
     {"lora", FILL_FildeshSxprotoField_STRING(1, FILENAME_MAX)},
     {"min_p", FILL_DEFAULT_FildeshSxprotoField_FLOAT},
     {"mirostat", FILL_FildeshSxprotoField_INT(0, 2)},

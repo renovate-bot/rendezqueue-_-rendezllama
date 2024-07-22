@@ -62,7 +62,7 @@ rendezllama::augment_tokenize_chat_input(
     chat_guide.begin_turn(opt.message_opts.size()-1);
     s.erase(0, 2);
     prevent_subsequent_newline = maybe_trim_endspace(s);
-    if (opt.message_opts.back().prefix.back() != '\n' || opt.linespace_on) {
+    if (opt.message_opts.back().prefix.back() == '\n' && opt.linespace_on) {
       if (!s.empty() && s.front() != ' ') {
         s.insert(0, " ");
       }
@@ -79,7 +79,7 @@ rendezllama::augment_tokenize_chat_input(
   }
   else {
     chat_guide.yield_turn(0);
-    if (opt.message_opts[0].prefix.back() != '\n' || opt.linespace_on) {
+    if (opt.message_opts[0].prefix.back() == '\n' && opt.linespace_on) {
       if (!s.empty() && s.front() != ' ') {
         s.insert(0, " ");
       }

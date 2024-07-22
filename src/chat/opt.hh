@@ -30,7 +30,6 @@ struct ChatOptions {
   std::vector<ChatMessageOpt> message_opts;
   std::string model_filename;
   std::string lora_filename;
-  std::string lora_base_model_filename;
   std::string transcript_sibling_filename;
   std::string transcript_filename;
 

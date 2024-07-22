@@ -92,16 +92,16 @@ int main(int argc, char** argv)
   }
 
   if (exstatus == 0 && !opt.lora_filename.empty()) {
-    const char* base_model_filename = NULL;
-    if (!opt.lora_base_model_filename.empty()) {
-      base_model_filename = opt.lora_base_model_filename.c_str();
-    }
     const float scale = 1.0f;
-    int istat = llama_model_apply_lora_from_file(
-        model, opt.lora_filename.c_str(), scale,
-        base_model_filename,
-        opt.thread_count);
-    if (istat != 0) {exstatus = 1;}
+    struct llama_lora_adapter* lora = llama_lora_adapter_init(
+        model, opt.lora_filename.c_str());
+    if (lora) {
+      int istat = llama_lora_adapter_set(ctx, lora, scale);
+      if (istat != 0) {
+        exstatus = 1;
+        llama_lora_adapter_free(lora);
+      }
+    }
   }
 
   Vocabulary vocabulary(model);

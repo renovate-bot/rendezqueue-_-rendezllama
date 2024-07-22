@@ -74,6 +74,7 @@ Vocabulary::detokenize_to(FildeshO* out, Token_id token_id) const
   int n = llama_token_to_piece(
       model_, token_id,
       s, attempt_size,
+      /*lstrip=*/0,
       /*special=*/false);
   if (n >= 0) {
     out->size -= (attempt_size - n);
@@ -84,6 +85,7 @@ Vocabulary::detokenize_to(FildeshO* out, Token_id token_id) const
     n = llama_token_to_piece(
         model_, token_id,
         s, n,
+        /*lstrip=*/0,
         /*special=*/false);
   }
 }

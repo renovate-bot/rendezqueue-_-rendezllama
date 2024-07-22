@@ -148,7 +148,7 @@ static void reinitialize_chat_prefixes(ChatOptions& opt) {
       opt.message_opts[0].prefix += ' ';
       opt.message_opts[1].prefix += ' ';
     }
-    opt.message_opts[0].prefix += opt.protagonist + ':';
+    opt.message_opts[0].prefix += opt.protagonist + ": ";
     opt.message_opts[1].prefix += opt.confidant + ':';
   }
   for (auto& message_opt : opt.message_opts) {
@@ -261,13 +261,6 @@ rendezllama::parse_options(rendezllama::ChatOptions& opt, int argc, char** argv)
     else if (0 == strcmp("--lora", argv[argi])) {
       argi += 1;
       opt.lora_filename = argv[argi];
-      opt.mmap_on = false;  // mmap() is incompatible.
-    }
-    else if (0 == strcmp("--lora_base_model", argv[argi]) ||
-             0 == strcmp("--lora_base", argv[argi]) ||
-             0 == strcmp("--lora-base", argv[argi])) {
-      argi += 1;
-      opt.lora_base_model_filename = argv[argi];
     }
     else if (0 == strcmp("--x_setting", argv[argi])) {
       argi += 1;
@@ -488,9 +481,6 @@ slurp_sxpb_options_close_FildeshX(
     opt.lora_filename = s;
     opt.mmap_on = false;  // mmap() is incompatible.
   }
-
-  lone_subfield_at_FildeshSxpb_to_cc_string(
-      &opt.lora_base_model_filename, sxpb, top_it, "lora_base_model");
 
   if (lone_subfield_at_FildeshSxpb_to_str(&s, sxpb, top_it, "x_rolling")) {
     FildeshX* rolling_in = open_sibling_FildeshXF(sxpb_filename.c_str(), s);

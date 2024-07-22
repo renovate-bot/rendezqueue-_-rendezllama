@@ -2,7 +2,7 @@
 (confidant "ASSISTANT")
 ((chat_prefixes)
  (m
-  (prefix "{{user}}:")
+  (prefix "{{user}}: ")
   (suffix "</s>")
  )
  (m

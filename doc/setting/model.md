@@ -5,14 +5,11 @@ I prefer using flags to specify model files.
 - `--model ggml-model-q4_0.gguf` are the model weights. Usually quantized.
   - Required.
 - `--lora ggml-adapter-model.gguf` gives a LoRA.
-- `--lora_base ggml-model-f16.gguf` gives higher-precision model weights to apply the LoRA on top of.
-  - Not required when using `--lora` but you'll otherwise get a warning if the `--model` weights are low-precision.
 
 Even though the flags are preferred, `setting.sxpb` supports them too:
 ```lisp
 (model "ggml-model-q4_0.gguf")
 (lora "ggml-adapter-model.gguf")
-(lora_base "ggml-model-f16.gguf")
 ```
 
 ## Context

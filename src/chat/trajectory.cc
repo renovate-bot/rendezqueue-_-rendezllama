@@ -45,13 +45,32 @@ ChatTrajectory::insert_all_at(
   }
 }
 
+static
+  void
+maybe_pop_for_rewrite(
+    ChatTrajectory& trajectory,
+    fildesh::ostringstream& oss,
+    const Vocabulary& vocabulary)
+{
+  if (trajectory.priming_token_count() < trajectory.token_count()) {
+    if (vocabulary.last_char_of(trajectory.token()) == ' ') {
+      vocabulary.detokenize_to(oss, trajectory.token());
+      trajectory.erase_all_at(trajectory.token_count() - 1);
+    }
+  }
+}
+
   void
 ChatTrajectory::tokenize_append(
     std::string_view s,
     const Vocabulary& vocabulary)
 {
+  fildesh::ostringstream oss;
+  maybe_pop_for_rewrite(*this, oss, vocabulary);
+  oss << s;
+
   std::vector<Token_id> tmp;
-  vocabulary.tokenize_to(tmp, s);
+  vocabulary.tokenize_to(tmp, oss.view());
   this->insert_all_at(this->token_count(), tmp);
 }
 
