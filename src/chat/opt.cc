@@ -210,14 +210,6 @@ static int initialize_options(ChatOptions& opt) {
 
 static
   bool
-slurp_sxpb_options_close_FildeshX(
-    FildeshX* in,
-    ChatOptions& opt,
-    const FildeshSxprotoField* schema,
-    const std::string& filename);
-
-static
-  bool
 parse_sxpb_file_options(ChatOptions& opt, const char* filename)
 {
   FildeshX* in = open_FildeshXF(filename);
@@ -411,7 +403,7 @@ lone_subfield_at_FildeshSxpb_to_cc_string(
 }
 
   bool
-slurp_sxpb_options_close_FildeshX(
+rendezllama::slurp_sxpb_options_close_FildeshX(
     FildeshX* in,
     ChatOptions& opt,
     const FildeshSxprotoField* schema,
@@ -514,8 +506,19 @@ slurp_sxpb_options_close_FildeshX(
     if (!nullish_FildeshSxpbIT(sub_it)) {
       for (sub_it = first_at_FildeshSxpb(sxpb, sub_it); !nullish_FildeshSxpbIT(sub_it);
            sub_it = next_at_FildeshSxpb(sxpb, sub_it)) {
-        if (lone_subfield_at_FildeshSxpb_to_str(&s, sxpb, sub_it, "name")) {
-          opt.special_token_names.push_back(s);
+        auto& special = opt.special_tokens.emplace_back();
+        lone_subfield_at_FildeshSxpb_to_cc_string(&special.alias, sxpb, sub_it, "alias");
+        assert(!special.alias.empty());
+        FildeshSxpbIT candidate_it = lookup_subfield_at_FildeshSxpb(sxpb, sub_it, "candidates");
+        if (nullish_FildeshSxpbIT(candidate_it)) {
+          special.candidates.push_back(special.alias);
+        }
+        else {
+          for (candidate_it = first_at_FildeshSxpb(sxpb, candidate_it);
+               !nullish_FildeshSxpbIT(candidate_it);
+               candidate_it = next_at_FildeshSxpb(sxpb, candidate_it)) {
+            special.candidates.push_back(str_value_at_FildeshSxpb(sxpb, candidate_it));
+          }
         }
       }
     }

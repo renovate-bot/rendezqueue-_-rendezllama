@@ -8,13 +8,12 @@ In order of interest:
 - [confidant_alpaca](confidant_alpaca/): A camelid that occasionally spits.
   - Demonstrates a method of prompting instruction-tuned models to fill in character dialogue.
 - Instruction-following AI assistants.
+  - For all of these examples, the assistant must end its messages with a special token like EOS.
   - [assistant_alpaca](assistant_alpaca/): Alpaca prompt format.
-  - [assistant_chatml](assistant_chatml/): ChatML prompt format that requires special `<|im_start|>` and `<|im_end|>` tokens.
-  - [assistant_gemma](assistant_gemma/): Gemma prompt format requires special `<start_of_turn>` and `<end_of_turn>` tokens.
+  - [assistant_chatml](assistant_chatml/): ChatML prompt format that typically requires special `<|im_start|>` and `<|im_end|>` tokens but is configured with fallbacks.
+  - [assistant_gemma](assistant_gemma/): Gemma prompt format that requires special `<start_of_turn>` and `<end_of_turn>` tokens.
   - [assistant_mistral](assistant_mistral/): Mistral propmt format that requires special `[INST]` and `[/INST]` tokens.
-- [assistant_vicuna](assistant_vicuna/): Conversational AI assistant.
-  - Minimial prompt that lets a Vicuna-style model do its thing.
-  - Only works with models that end the assistant's message with an EOS token.
+  - [assistant_vicuna](assistant_vicuna/): Vicuna prompt format.
 - [assistant_coprocess](assistant_coprocess/): A simple assistant that can be controlled as a coprocess.
   - Demonstrates the `/puts` and `/gets` commands.
 

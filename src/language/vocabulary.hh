@@ -12,6 +12,7 @@ namespace rendezllama {
 class Vocabulary {
  public:
   typedef int Token_id;
+  static const Token_id null_token_id = -1;
 
  public:
   explicit Vocabulary(const llama_model* model);

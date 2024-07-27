@@ -13,7 +13,9 @@ static FildeshSxprotoField chat_prefixes_manyof[] = {
   {"m", FILL_FildeshSxprotoField_MESSAGE(chat_prefixes_m_message)},
 };
 static FildeshSxprotoField special_token_message[] = {
-  {"name", FILL_FildeshSxprotoField_STRING(1, INT_MAX)},
+  {"alias", FILL_FildeshSxprotoField_STRING(1, INT_MAX)},
+  {"name", FILL_DEFAULT_FildeshSxprotoField_ALIAS},
+  {"candidates", FILL_DEFAULT_FildeshSxprotoField_STRINGS},
 };
 static FildeshSxprotoField substitution_message[] = {
   {"protagonist_alias", FILL_FildeshSxprotoField_STRING(1, INT_MAX)},

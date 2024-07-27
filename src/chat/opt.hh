@@ -18,6 +18,11 @@ struct ChatMessageOpt {
   std::string given_suffix;
 };
 
+struct SpecialToken {
+  std::string alias;
+  std::vector<std::string> candidates;
+};
+
 struct ChatOptions {
 
   std::string protagonist;
@@ -26,7 +31,7 @@ struct ChatOptions {
   std::string confidant_alias;
   std::string bos_token_alias;
   std::string eos_token_alias;
-  std::vector<std::string> special_token_names;
+  std::vector<SpecialToken> special_tokens;
   std::vector<ChatMessageOpt> message_opts;
   std::string model_filename;
   std::string lora_filename;
@@ -80,6 +85,12 @@ print_options(std::ostream& out, const ChatOptions& opt);
 int
 parse_options(ChatOptions& opt, int argc, char** argv);
 bool
+slurp_sxpb_options_close_FildeshX(
+    FildeshX* in,
+    rendezllama::ChatOptions& opt,
+    const FildeshSxprotoField* schema,
+    const std::string& filename);
+bool
 slurp_sxpb_initialize_options_close_FildeshX(
     FildeshX* in,
     rendezllama::ChatOptions& opt,
@@ -88,6 +99,7 @@ bool
 slurp_sxpb_dynamic_options_close_FildeshX(
     FildeshX* in,
     rendezllama::ChatOptions& opt);
+
 
 }  // namespace rendezllama
 #endif

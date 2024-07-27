@@ -120,7 +120,7 @@ Vocabulary::tokenize_special(std::string_view s) const
       /*add_bos=*/false,
       /*special=*/true);
   if (n != 1) {
-    token_id = this->cardinality();
+    token_id = Vocabulary::null_token_id;
   }
   return token_id;
 }

@@ -117,14 +117,18 @@ int main(int argc, char** argv)
       vocabulary.assign_substitution(
           opt.eos_token_alias, vocabulary.eos_token_id());
     }
-    for (const auto& name : opt.special_token_names) {
-      Vocabulary::Token_id token_id = vocabulary.tokenize_special(name);
-      if (token_id < static_cast<Vocabulary::Token_id>(vocabulary.cardinality())) {
-        vocabulary.assign_substitution(name, token_id);
+    for (const auto& special : opt.special_tokens) {
+      Vocabulary::Token_id token_id = Vocabulary::null_token_id;
+      for (const auto& name : special.candidates) {
+        token_id = vocabulary.tokenize_special(name);
+        if (token_id != Vocabulary::null_token_id) {break;}
+      }
+      if (token_id != Vocabulary::null_token_id) {
+        vocabulary.assign_substitution(special.alias, token_id);
       }
       else {
         exstatus = 65;
-        fildesh_log_errorf("Unknown special token: %s", name.c_str());
+        fildesh_log_errorf("Unknown special token: %s", special.alias.c_str());
       }
     }
     chat_disp.out_ = open_FildeshOF("/dev/stdout");
