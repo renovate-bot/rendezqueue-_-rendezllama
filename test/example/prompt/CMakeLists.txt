@@ -17,6 +17,8 @@ add_test(NAME example_prompt_assistant_coprocess_parse_test COMMAND example_prom
   "${PROJECT_SOURCE_DIR}/example/prompt/assistant_coprocess/setting.sxpb")
 add_test(NAME example_prompt_assistant_gemma_parse_test COMMAND example_prompt_parse_test
   "${PROJECT_SOURCE_DIR}/example/prompt/assistant_gemma/setting.sxpb")
+add_test(NAME example_prompt_assistant_llama_parse_test COMMAND example_prompt_parse_test
+  "${PROJECT_SOURCE_DIR}/example/prompt/assistant_llama/setting.sxpb")
 add_test(NAME example_prompt_assistant_mistral_parse_test COMMAND example_prompt_parse_test
   "${PROJECT_SOURCE_DIR}/example/prompt/assistant_mistral/setting.sxpb")
 add_test(NAME example_prompt_assistant_plain_parse_test COMMAND example_prompt_parse_test

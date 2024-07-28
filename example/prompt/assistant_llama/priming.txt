@@ -1,0 +1,6 @@
+<|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: July 2024
+
+You are a helpful assistant.<|eot_id|>
