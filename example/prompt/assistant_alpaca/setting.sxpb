@@ -8,9 +8,6 @@
   (suffix "</s>\n\n")
  )
 )
-(substitution
- (eos_token_alias "</s>")
-)
 ; Lines are considered as sentences.
 (sentence_terminals () "\n")
 ; Max 10 lines at a time.
@@ -21,9 +18,9 @@
 (x_rolling "rolling.txt")
 (o_rolling "../../../bld/example/prompt/assistant_alpaca.txt")
 
-; No token penalization.
-(repeat_window 0)
-
-; Defaults.
 (model_token_limit 2048)
-(mirostat 2)
+(language
+ (substitution
+  (eos_token_alias "</s>")
+ )
+)

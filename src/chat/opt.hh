@@ -55,7 +55,7 @@ struct ChatOptions {
   float frequency_penalty = 0.0;
   float presence_penalty = 0.0;
   float repeat_penalty = 1.17647;
-  unsigned repeat_last_count = 256;
+  unsigned repeat_last_count = 0;
   unsigned mirostat_sampling = 2;
   float mirostat_tau = 5.0;
   float mirostat_eta = 0.1;
