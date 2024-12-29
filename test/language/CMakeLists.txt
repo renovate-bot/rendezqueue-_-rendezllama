@@ -1,3 +1,12 @@
+add_executable(language_schema_test
+  "language_schema_test.cc"
+)
+target_link_libraries(language_schema_test PRIVATE
+  chat_opt_cc
+)
+add_test(NAME language_schema_test COMMAND
+  language_schema_test
+)
 
 add_executable(language_vocabulary_test
   "vocabulary_test.cc"
