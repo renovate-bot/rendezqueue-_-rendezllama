@@ -204,15 +204,10 @@ Inference::reinitialize(const ChatOptions& opt)
   auto smpl_param = llama_sampler_chain_default_params();
   smpl_ = llama_sampler_chain_init(smpl_param);
   llama_sampler_init_penalties(
-      vocabulary_.cardinality(),
-      vocabulary_.eos_token_id(),
-      vocabulary_.newline_token_id(),
       opt.repeat_last_count,
       opt.repeat_penalty,
       opt.frequency_penalty,
-      opt.presence_penalty,
-      /*penalize_newline=*/true,
-      /*ignore_eos=*/false);
+      opt.presence_penalty);
   if (opt.mirostat_sampling == 1) {
     mirostat1_sample(smpl_, opt, seed, vocabulary_);
   }
