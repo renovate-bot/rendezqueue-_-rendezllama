@@ -20,7 +20,6 @@ rendezllama::options_sxproto_schema()
 {
   static FildeshSxprotoField toplevel_fields[] = {
     {"language", FILL_DEFAULT_FildeshSxprotoField_ALIAS},
-    {"substitution", FILL_DEFAULT_FildeshSxprotoField_ALIAS},
     {"batch_count", FILL_FildeshSxprotoField_INT(1, INT_MAX)},
     {"chat_prefixes", FILL_FildeshSxprotoField_MANYOF(chat_prefixes_manyof)},
     {"confidant", FILL_FildeshSxprotoField_STRING(1, INT_MAX)},
@@ -30,9 +29,6 @@ rendezllama::options_sxproto_schema()
     {"linespace_on", FILL_DEFAULT_FildeshSxprotoField_BOOL},
     {"lora", FILL_FildeshSxprotoField_STRING(1, FILENAME_MAX)},
     {"min_p", FILL_DEFAULT_FildeshSxprotoField_FLOAT},
-    {"mirostat", FILL_FildeshSxprotoField_INT(0, 2)},
-    {"mirostat_eta", FILL_FildeshSxprotoField_FLOAT(0, 10)},
-    {"mirostat_tau", FILL_FildeshSxprotoField_FLOAT(0, 10)},
     {"mlock_on", FILL_DEFAULT_FildeshSxprotoField_BOOL},
     {"mmap_on", FILL_DEFAULT_FildeshSxprotoField_BOOL},
     {"model", FILL_FildeshSxprotoField_STRING(1, FILENAME_MAX)},
@@ -44,7 +40,6 @@ rendezllama::options_sxproto_schema()
     {"repeat_last_n", FILL_DEFAULT_FildeshSxprotoField_ALIAS},
     {"repeat_window", FILL_DEFAULT_FildeshSxprotoField_ALIAS},
     {"repeat_penalty", FILL_DEFAULT_FildeshSxprotoField_FLOAT},
-    {"seed", FILL_FildeshSxprotoField_INT(0, INT_MAX)},
     {"sentence_limit", FILL_FildeshSxprotoField_INT(0, INT_MAX)},
     {"sentence_terminals", FILL_DEFAULT_FildeshSxprotoField_STRINGS},
     {"sentence_token_limit", FILL_FildeshSxprotoField_INT(0, INT_MAX)},
@@ -67,10 +62,6 @@ rendezllama::options_sxproto_schema()
     tmp_field.name = toplevel_fields[0].name;
     tmp_field.tag_id = toplevel_fields[0].tag_id;
     toplevel_fields[0] = tmp_field;
-    tmp_field = rendezllama::language_sxproto_schema()->subfields[0];
-    tmp_field.name = toplevel_fields[1].name;
-    tmp_field.tag_id = toplevel_fields[1].tag_id;
-    toplevel_fields[1] = tmp_field;
     lone_toplevel_initialization_FildeshSxprotoField(schema);
   }
   return schema;
@@ -81,14 +72,10 @@ rendezllama::dynamic_options_sxproto_schema()
 {
   static FildeshSxprotoField toplevel_fields[] = {
     {"language", FILL_DEFAULT_FildeshSxprotoField_ALIAS},
-    {"substitution", FILL_DEFAULT_FildeshSxprotoField_ALIAS},
     {"chat_prefixes", FILL_FildeshSxprotoField_MANYOF(chat_prefixes_manyof)},
     {"confidant", FILL_FildeshSxprotoField_STRING(1, INT_MAX)},
     {"frequency_penalty", FILL_DEFAULT_FildeshSxprotoField_FLOAT},
     {"min_p", FILL_DEFAULT_FildeshSxprotoField_FLOAT},
-    {"mirostat", FILL_FildeshSxprotoField_INT(0, 2)},
-    {"mirostat_eta", FILL_FildeshSxprotoField_FLOAT(0, 10)},
-    {"mirostat_tau", FILL_FildeshSxprotoField_FLOAT(0, 10)},
     {"presence_penalty", FILL_DEFAULT_FildeshSxprotoField_FLOAT},
     {"protagonist", FILL_FildeshSxprotoField_STRING(1, INT_MAX)},
     {"repeat_last_count", FILL_FildeshSxprotoField_INT(0, INT_MAX)},
@@ -113,10 +100,6 @@ rendezllama::dynamic_options_sxproto_schema()
     tmp_field.name = toplevel_fields[0].name;
     tmp_field.tag_id = toplevel_fields[0].tag_id;
     toplevel_fields[0] = tmp_field;
-    tmp_field = rendezllama::language_sxproto_schema()->subfields[0];
-    tmp_field.name = toplevel_fields[1].name;
-    tmp_field.tag_id = toplevel_fields[1].tag_id;
-    toplevel_fields[1] = tmp_field;
     lone_toplevel_initialization_FildeshSxprotoField(schema);
   }
   return schema;

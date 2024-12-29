@@ -135,7 +135,6 @@ rendezllama::print_options(std::ostream& out, const rendezllama::ChatOptions& op
     << ", thread_count=" << opt.thread_count
     << ", sentence_token_limit=" << opt.sentence_token_limit
     << ", sentence_limit=" << opt.sentence_limit
-    << ", seed=" << opt.seed
     << '\n';
   out.flush();
 }
@@ -227,7 +226,11 @@ rendezllama::parse_options(rendezllama::ChatOptions& opt, int argc, char** argv)
   int exstatus = 0;
   int argi;
 
-  opt.seed = INT_MAX & time(NULL);
+  {
+    auto sampling = rendezllama::inference::Sampling();
+    sampling.pick_via = rendezllama::inference::Mirostat();
+    opt.infer_via = sampling;
+  }
 
   opt.antiprompts = opt.sentence_terminals;
   opt.antiprompts.insert("\n");
@@ -316,17 +319,6 @@ rendezllama::parse_options(rendezllama::ChatOptions& opt, int argc, char** argv)
       }
       else {
         fildesh_log_error("--batch_count needs positive arg");
-        exstatus = 64;
-      }
-    }
-    else if (0 == strcmp("--seed", argv[argi])) {
-      int n = 0;
-      argi += 1;
-      if (fildesh_parse_int(&n, argv[argi]) && n >= 0) {
-        opt.seed = n;
-      }
-      else {
-        fildesh_log_error("--seed needs non-negative int");
         exstatus = 64;
       }
     }
@@ -431,6 +423,9 @@ rendezllama::slurp_sxpb_options_close_FildeshX(
     if (!nullish_FildeshSxpbIT(lookup_subfield_at_FildeshSxpb(sxpb, it, "substitution"))) {
       opt.substitution = language.substitution;
     }
+    if (language.infer_via.index() != 0) {
+      opt.infer_via = language.infer_via;
+    }
   }
 
   lone_subfield_at_FildeshSxpb_to_unsigned(
@@ -506,13 +501,6 @@ rendezllama::slurp_sxpb_options_close_FildeshX(
     }
   }
 
-  it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "substitution");
-  if (!nullish_FildeshSxpbIT(it)) {
-    if (rendezllama::language::populate_Substitution(language.substitution, sxpb, it)) {
-      opt.substitution = language.substitution;
-    }
-  }
-
   it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "chat_prefixes");
   if (!nullish_FildeshSxpbIT(it)) {
     opt.message_opts.clear();
@@ -536,7 +524,6 @@ rendezllama::slurp_sxpb_options_close_FildeshX(
     }
   }
 
-  lone_subfield_at_FildeshSxpb_to_unsigned(&opt.seed, sxpb, top_it, "seed");
   lone_subfield_at_FildeshSxpb_to_bool(&opt.coprocess_mode_on, sxpb, top_it, "coprocess_mode_on");
   lone_subfield_at_FildeshSxpb_to_bool(&opt.startspace_on, sxpb, top_it, "startspace_on");
   lone_subfield_at_FildeshSxpb_to_bool(&opt.linespace_on, sxpb, top_it, "linespace_on");
@@ -553,10 +540,6 @@ rendezllama::slurp_sxpb_options_close_FildeshX(
   lone_subfield_at_FildeshSxpb_to_float(&opt.min_p, sxpb, top_it, "min_p");
   lone_subfield_at_FildeshSxpb_to_float(&opt.typical_p, sxpb, top_it, "typical_p");
   lone_subfield_at_FildeshSxpb_to_float(&opt.temperature, sxpb, top_it, "temperature");
-
-  lone_subfield_at_FildeshSxpb_to_unsigned(&opt.mirostat_sampling, sxpb, top_it, "mirostat");
-  lone_subfield_at_FildeshSxpb_to_float(&opt.mirostat_tau, sxpb, top_it, "mirostat_tau");
-  lone_subfield_at_FildeshSxpb_to_float(&opt.mirostat_eta, sxpb, top_it, "mirostat_eta");
 
   lone_subfield_at_FildeshSxpb_to_unsigned(&opt.thread_count, sxpb, top_it, "thread_count");
   lone_subfield_at_FildeshSxpb_to_unsigned(&opt.batch_thread_count, sxpb, top_it, "batch_thread_count");

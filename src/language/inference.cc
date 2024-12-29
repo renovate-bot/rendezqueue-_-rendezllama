@@ -6,6 +6,7 @@
 #include <thread>
 
 #include <fildesh/fildesh.h>
+#include <fildesh/ostream.hh>
 
 #include "src/chat/display.hh"
 #include "src/chat/guide.hh"
@@ -148,6 +149,13 @@ rendezllama::make_llama_context(rendezllama::ChatOptions& opt)
 }
 
 static
+  int
+new_sampling_seed()
+{
+  return static_cast<int>(INT_MAX & time(NULL));
+}
+
+static
   void
 temperature_based_sample(
     struct llama_sampler* smpl,
@@ -165,40 +173,43 @@ temperature_based_sample(
 
 static
   void
-mirostat1_sample(
+mirostat_sample(
     struct llama_sampler* smpl,
-    const rendezllama::ChatOptions& opt,
+    const rendezllama::inference::Mirostat& mirostat,
     unsigned seed,
-    const Vocabulary& vocabulary)
+    const rendezllama::Vocabulary& vocabulary)
 {
-  const int mirostat_m = 100;
-  llama_sampler_chain_add(
-      smpl,
-      llama_sampler_init_mirostat(
-          vocabulary.cardinality(), seed,
-          opt.mirostat_tau, opt.mirostat_eta, mirostat_m));
-}
-
-static
-  void
-mirostat2_sample(
-    struct llama_sampler* smpl,
-    const rendezllama::ChatOptions& opt,
-    unsigned seed)
-{
-  llama_sampler_chain_add(
-      smpl,
-      llama_sampler_init_mirostat_v2(
-          seed, opt.mirostat_tau, opt.mirostat_eta));
+  if (mirostat.version == 1) {
+    const int mirostat_m = 100;
+    llama_sampler_chain_add(
+        smpl,
+        llama_sampler_init_mirostat(
+            vocabulary.cardinality(), seed,
+            mirostat.tau, mirostat.eta, mirostat_m));
+  }
+  else if (mirostat.version == 2) {
+    llama_sampler_chain_add(
+        smpl,
+        llama_sampler_init_mirostat_v2(
+            seed, mirostat.tau, mirostat.eta));
+  }
 }
 
   void
 Inference::reinitialize(const ChatOptions& opt)
 {
-  auto seed = opt.seed;
+  fildesh::ofstream eout("/dev/stderr");
+
+  const auto* sampling = std::get_if<rendezllama::inference::Sampling>(&opt.infer_via);
+  assert(sampling);
+  auto seed = sampling->seed;
+  if (smpl_ || seed < 0) {
+    // We're retrying or just don't have a fixed seed, so we should reseed.
+    seed = new_sampling_seed();
+  }
   if (smpl_) {
     llama_sampler_free(smpl_);
-    seed = INT_MAX & time(NULL);
+    eout.open("/dev/null");
   }
   token_count_ = 0;
   auto smpl_param = llama_sampler_chain_default_params();
@@ -208,11 +219,12 @@ Inference::reinitialize(const ChatOptions& opt)
       opt.repeat_penalty,
       opt.frequency_penalty,
       opt.presence_penalty);
-  if (opt.mirostat_sampling == 1) {
-    mirostat1_sample(smpl_, opt, seed, vocabulary_);
-  }
-  else if (opt.mirostat_sampling == 2) {
-    mirostat2_sample(smpl_, opt, seed);
+  if (const auto* mirostat = std::get_if<rendezllama::inference::Mirostat>(&sampling->pick_via)) {
+    llama_sampler_chain_add(smpl_, llama_sampler_init_temp(opt.temperature));
+    mirostat_sample(smpl_, *mirostat, seed, vocabulary_);
+    eout << "mirostat:"
+      << "\n  version: " << mirostat->version
+      << "\n";
   }
   else {
     temperature_based_sample(smpl_, opt, seed);

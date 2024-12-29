@@ -7,6 +7,8 @@
 
 #include <fildesh/sxproto.h>
 
+#include "src/language/inference_schema.hh"
+
 namespace rendezllama {
 namespace language {
 
@@ -26,6 +28,7 @@ struct Substitution {
 
 struct Language {
   Substitution substitution;
+  rendezllama::inference::InferVia infer_via;
 };
 
 bool

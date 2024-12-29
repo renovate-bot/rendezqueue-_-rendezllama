@@ -56,13 +56,9 @@ struct ChatOptions {
   float presence_penalty = 0.0;
   float repeat_penalty = 1.17647;
   unsigned repeat_last_count = 0;
-  unsigned mirostat_sampling = 2;
-  float mirostat_tau = 5.0;
-  float mirostat_eta = 0.1;
   unsigned model_token_limit = 0;  // Default derived from model.
   unsigned context_token_limit = 0;  // Defaults to model_token_limit.
   unsigned batch_count = 512;
-  unsigned seed;
   bool mlock_on = false;
   bool mmap_on = true;
   bool coprocess_mode_on = false;
@@ -70,6 +66,8 @@ struct ChatOptions {
   std::set<std::string> antiprompts;
   // Can't set these yet.
   bool verbose_prompt = false;
+
+  inference::InferVia infer_via;
 };
 
 void

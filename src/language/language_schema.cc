@@ -18,10 +18,16 @@ static FildeshSxprotoField substitution_message[] = {
 
 const FildeshSxprotoField* rendezllama::language_sxproto_schema() {
   static FildeshSxprotoField toplevel_fields[] = {
+    {"infer_via", FILL_DEFAULT_FildeshSxprotoField_ALIAS},
     {"substitution", FILL_FildeshSxprotoField_MESSAGE(substitution_message)},
   };
   DECLARE_TOPLEVEL_FildeshSxprotoField(schema, toplevel_fields);
   if (!schema->name) {
+    FildeshSxprotoField tmp_field;
+    tmp_field = *rendezllama::inference_sxproto_schema();
+    tmp_field.name = toplevel_fields[0].name;
+    tmp_field.tag_id = toplevel_fields[0].tag_id;
+    toplevel_fields[0] = tmp_field;
     lone_toplevel_initialization_FildeshSxprotoField(schema);
   }
   return schema;
@@ -89,5 +95,9 @@ rendezllama::language::populate_Language(
   if (!nullish_FildeshSxpbIT(sub_it)) {
     populate_Substitution(language.substitution, sxpb, sub_it);
   }
+
+  sub_it = lookup_subfield_at_FildeshSxpb(sxpb, it, "infer_via");
+  rendezllama::inference::populate_InferVia(language.infer_via, sxpb, sub_it);
+
   return true;
 }
