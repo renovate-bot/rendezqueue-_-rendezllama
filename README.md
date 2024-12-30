@@ -65,8 +65,7 @@ Remember, the recent chat content is just a rolling prompt concatenated to the e
   - `/D` or `/D 0` deletes all text on the current line without consuming a newline. Positive integers delete that many earlier lines in full.
   - `/b` or `/b 1` deletes the last token.
   - `/B` or `/B 1` deletes the last word.
-- Repeat penalty.
-  - See [doc/setting/penalty.md](doc/setting/penalty.md) for algorithm parameters. Defaults are okay for a chatbot.
-- Temperature-based sampling.
-  - See [doc/setting/sample.md](doc/setting/sample.md) for algorithm parameters. Defaults are okay for a chatbot.
-
+- Sampling.
+  - A slash followed by a valid sampling configuration in `setting.sxpb` reconfigures the sampling parameters.
+  - `/(language ((infer_via sampling) (adjust_thru (()) (temperature 0.9))))` sets the temperature to 0.9.
+  - See [doc/setting/sampling.md](doc/setting/sampling.md) for more ways to control inference.

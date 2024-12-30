@@ -13,6 +13,26 @@
 
 using rendezllama::ChatOptions;
 
+ChatOptions::ChatOptions()
+{
+  this->antiprompts = this->sentence_terminals;
+  this->antiprompts.insert("\n");
+
+  using rendezllama::inference::AdjustViaKind;
+  std::vector<rendezllama::inference::AdjustVia> adjust_thru;
+  rendezllama::inference::AdjustVia adjust_via;
+  adjust_via.emplace<AdjustViaKind::min_p>(0.1f);
+  adjust_thru.push_back(adjust_via);
+  adjust_via.emplace<AdjustViaKind::temperature>(0.8f);
+  adjust_thru.push_back(adjust_via);
+
+  auto sampling = rendezllama::inference::Sampling();
+  sampling.adjust_thru = adjust_thru;
+  sampling.pick_via = rendezllama::inference::Probability();
+
+  this->infer_via = sampling;
+}
+
 static
   void
 parse_rolling_prompt(FildeshX* in, rendezllama::ChatOptions& opt)
@@ -124,13 +144,6 @@ rendezllama::print_options(std::ostream& out, const rendezllama::ChatOptions& op
   }
   out << '\n';
   out
-    << "Sampling: temperature=" << opt.temperature
-    << ", top_k=" << opt.top_k
-    << ", top_p=" << opt.top_p
-    << ", min_p=" << opt.min_p
-    << ", repeat_window=" << opt.repeat_last_count
-    << ", repeat_penalty=" << opt.repeat_penalty
-    << '\n'
     << "Generate: batch_count=" << opt.batch_count
     << ", thread_count=" << opt.thread_count
     << ", sentence_token_limit=" << opt.sentence_token_limit
@@ -225,15 +238,6 @@ rendezllama::parse_options(rendezllama::ChatOptions& opt, int argc, char** argv)
 {
   int exstatus = 0;
   int argi;
-
-  {
-    auto sampling = rendezllama::inference::Sampling();
-    sampling.pick_via = rendezllama::inference::Mirostat();
-    opt.infer_via = sampling;
-  }
-
-  opt.antiprompts = opt.sentence_terminals;
-  opt.antiprompts.insert("\n");
 
   for (argi = 1; exstatus == 0 && argi < argc; ++argi) {
     if (false) {
@@ -531,16 +535,6 @@ rendezllama::slurp_sxpb_options_close_FildeshX(
   lone_subfield_at_FildeshSxpb_to_bool(&opt.mmap_on, sxpb, top_it, "mmap_on");
 
   /** Command option??*/
-  lone_subfield_at_FildeshSxpb_to_float(&opt.frequency_penalty, sxpb, top_it, "frequency_penalty");
-  lone_subfield_at_FildeshSxpb_to_float(&opt.presence_penalty, sxpb, top_it, "presence_penalty");
-  lone_subfield_at_FildeshSxpb_to_float(&opt.repeat_penalty, sxpb, top_it, "repeat_penalty");
-  lone_subfield_at_FildeshSxpb_to_unsigned(&opt.repeat_last_count, sxpb, top_it, "repeat_last_count");
-  lone_subfield_at_FildeshSxpb_to_unsigned(&opt.top_k, sxpb, top_it, "top_k");
-  lone_subfield_at_FildeshSxpb_to_float(&opt.top_p, sxpb, top_it, "top_p");
-  lone_subfield_at_FildeshSxpb_to_float(&opt.min_p, sxpb, top_it, "min_p");
-  lone_subfield_at_FildeshSxpb_to_float(&opt.typical_p, sxpb, top_it, "typical_p");
-  lone_subfield_at_FildeshSxpb_to_float(&opt.temperature, sxpb, top_it, "temperature");
-
   lone_subfield_at_FildeshSxpb_to_unsigned(&opt.thread_count, sxpb, top_it, "thread_count");
   lone_subfield_at_FildeshSxpb_to_unsigned(&opt.batch_thread_count, sxpb, top_it, "batch_thread_count");
   lone_subfield_at_FildeshSxpb_to_unsigned(&opt.batch_count, sxpb, top_it, "batch_count");

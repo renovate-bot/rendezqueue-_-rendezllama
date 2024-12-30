@@ -25,10 +25,6 @@
 ; Limit context to avoid blowing up RAM on large context models.
 (model_token_limit 8000)
 
-; Match recommendation for Mistral NeMo v1.
-; https://build.nvidia.com/nv-mistralai/mistral-nemo-12b-instruct
-(temperature 0.2)
-(top_p 0.7)
 (language
  (substitution
   (eos_token_alias "</s>")
@@ -37,7 +33,13 @@
    (() (alias "[/INST]"))
   )
  )
+ ; Match recommendation for Mistral NeMo v1.
+ ; https://build.nvidia.com/nv-mistralai/mistral-nemo-12b-instruct
  ((infer_via sampling)
+  (adjust_thru (())
+   (top_p 0.7)
+   (temperature 0.2)
+  )
   ((pick_via probability))
  )
 )

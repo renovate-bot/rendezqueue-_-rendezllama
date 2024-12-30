@@ -20,6 +20,7 @@ using rendezllama::ChatOptions;
 using rendezllama::ChatTrajectory;
 using rendezllama::Inference;
 using rendezllama::Vocabulary;
+using rendezllama::inference::AdjustViaKind;
 
 Inference::Inference(const Vocabulary& vocabulary)
   : vocabulary_(vocabulary)
@@ -157,18 +158,74 @@ new_sampling_seed()
 
 static
   void
-temperature_based_sample(
+apply_sampler_chain(
     struct llama_sampler* smpl,
-    const rendezllama::ChatOptions& opt,
-    unsigned seed)
+    const rendezllama::inference::AdjustVia& adjust_via,
+    const struct llama_model* model,
+    unsigned seed,
+    std::ostream& eout)
 {
   const unsigned keep_one = 1;
-  llama_sampler_chain_add(smpl, llama_sampler_init_top_k(opt.top_k));
-  llama_sampler_chain_add(smpl, llama_sampler_init_typical(opt.typical_p, keep_one));
-  llama_sampler_chain_add(smpl, llama_sampler_init_top_p(opt.top_p, keep_one));
-  llama_sampler_chain_add(smpl, llama_sampler_init_min_p(opt.min_p, keep_one));
-  llama_sampler_chain_add(smpl, llama_sampler_init_temp(opt.temperature));
-  llama_sampler_chain_add(smpl, llama_sampler_init_dist(seed));
+
+  if (const auto* dry = std::get_if<AdjustViaKind::dry>(&adjust_via)) {
+    static const char* seq_breakers[] = {
+      "\n", ":",
+    };
+    llama_sampler_init_dry(
+        model,
+        dry->multiplier,
+        dry->base,
+        dry->allowed_length,
+        dry->window_length,
+        seq_breakers,
+        sizeof(seq_breakers)/sizeof(*seq_breakers));
+    eout << "dry:"
+      << "\n  multiplier: " << dry->multiplier
+      << "\n  base: " << dry->base
+      << "\n  allowed_length: " << dry->allowed_length
+      << "\n  window_length: " << dry->window_length
+      << "\n";
+  }
+  if (const auto* min_p = std::get_if<AdjustViaKind::min_p>(&adjust_via)) {
+    llama_sampler_chain_add(smpl, llama_sampler_init_min_p(*min_p, keep_one));
+    eout << "min_p: " << *min_p << "\n";
+  }
+  if (const auto* penalize_with = std::get_if<AdjustViaKind::penalize_with>(&adjust_via)) {
+    llama_sampler_init_penalties(
+        penalize_with->window_length,
+        penalize_with->repetition,
+        penalize_with->frequency,
+        penalize_with->presence);
+    eout << "penalties:"
+      << "\n  window_length: " << penalize_with->window_length
+      << "\n  repetition: " << penalize_with->repetition
+      << "\n  frequency: " << penalize_with->frequency
+      << "\n  presence: " << penalize_with->presence
+      << "\n";
+  }
+  if (const auto* temperature = std::get_if<AdjustViaKind::temperature>(&adjust_via)) {
+    llama_sampler_chain_add(smpl, llama_sampler_init_temp(*temperature));
+    eout << "temperature: " << *temperature << "\n";
+  }
+  if (const auto* top_k = std::get_if<AdjustViaKind::top_k>(&adjust_via)) {
+    llama_sampler_chain_add(smpl, llama_sampler_init_top_k(*top_k));
+    eout << "top_k: " << *top_k << "\n";
+  }
+  if (const auto* top_p = std::get_if<AdjustViaKind::top_p>(&adjust_via)) {
+    llama_sampler_chain_add(smpl, llama_sampler_init_top_p(*top_p, keep_one));
+    eout << "top_p: " << *top_p << "\n";
+  }
+  if (const auto* typical_p = std::get_if<AdjustViaKind::typical_p>(&adjust_via)) {
+    llama_sampler_chain_add(smpl, llama_sampler_init_typical(*typical_p, keep_one));
+    eout << "typical_p: " << *typical_p << "\n";
+  }
+  if (const auto* xtc = std::get_if<AdjustViaKind::xtc>(&adjust_via)) {
+    llama_sampler_chain_add(smpl, llama_sampler_init_xtc(xtc->probability, xtc->threshold, keep_one, seed));
+    eout << "xtc: "
+      << "\n  probability: " << xtc->probability
+      << "\n  threshold: " << xtc->threshold
+      << "\n";
+  }
 }
 
 static
@@ -196,7 +253,7 @@ mirostat_sample(
 }
 
   void
-Inference::reinitialize(const ChatOptions& opt)
+Inference::reinitialize(const ChatOptions& opt, const struct llama_model* model)
 {
   fildesh::ofstream eout("/dev/stderr");
 
@@ -214,20 +271,19 @@ Inference::reinitialize(const ChatOptions& opt)
   token_count_ = 0;
   auto smpl_param = llama_sampler_chain_default_params();
   smpl_ = llama_sampler_chain_init(smpl_param);
-  llama_sampler_init_penalties(
-      opt.repeat_last_count,
-      opt.repeat_penalty,
-      opt.frequency_penalty,
-      opt.presence_penalty);
+
+  for (const auto& adjust_via : sampling->adjust_thru) {
+    apply_sampler_chain(smpl_, adjust_via, model, seed, eout);
+  }
+
   if (const auto* mirostat = std::get_if<rendezllama::inference::Mirostat>(&sampling->pick_via)) {
-    llama_sampler_chain_add(smpl_, llama_sampler_init_temp(opt.temperature));
     mirostat_sample(smpl_, *mirostat, seed, vocabulary_);
     eout << "mirostat:"
       << "\n  version: " << mirostat->version
       << "\n";
   }
   else {
-    temperature_based_sample(smpl_, opt, seed);
+    llama_sampler_chain_add(smpl_, llama_sampler_init_dist(seed));
   }
 }
 
@@ -236,12 +292,13 @@ Inference::commit_to_context(
     struct llama_context* ctx,
     ChatDisplay& chat_disp,
     ChatTrajectory& chat_traj,
-    const ChatOptions& opt)
+    const ChatOptions& opt,
+    const llama_model* model)
 {
   assert(!chat_traj.erased_since_eval_ ||
          chat_traj.context_token_count_ < chat_traj.token_count());
   if (chat_traj.context_token_count_ < chat_traj.token_count()) {
-    this->reinitialize(opt);
+    this->reinitialize(opt, model);
   }
   if (chat_traj.context_token_count_ == chat_traj.token_count()) {
     return true;

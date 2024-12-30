@@ -21,6 +21,7 @@ struct ChatMessageOpt {
 };
 
 struct ChatOptions {
+  ChatOptions();
 
   std::string protagonist;
   std::string confidant;
@@ -47,15 +48,7 @@ struct ChatOptions {
   unsigned batch_thread_count = 0;
   unsigned sentence_limit = 0;
   unsigned sentence_token_limit = 0;
-  unsigned top_k = 1000;
-  float top_p = 0.95;
-  float min_p = 0.05;
-  float temperature = 0.7;
-  float typical_p = 1.0;
-  float frequency_penalty = 0.0;
-  float presence_penalty = 0.0;
-  float repeat_penalty = 1.17647;
-  unsigned repeat_last_count = 0;
+
   unsigned model_token_limit = 0;  // Default derived from model.
   unsigned context_token_limit = 0;  // Defaults to model_token_limit.
   unsigned batch_count = 512;
