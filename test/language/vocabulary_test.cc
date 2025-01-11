@@ -18,7 +18,7 @@ static void tokenize_test(const char* model_filename)
 {
   llama_model_params model_params = llama_model_default_params();
   model_params.vocab_only = true;
-  llama_model* model = llama_load_model_from_file(model_filename, model_params);
+  llama_model* model = llama_model_load_from_file(model_filename, model_params);
   assert(model);
 
   rendezllama::Vocabulary vocabulary(model);
@@ -52,7 +52,7 @@ static void tokenize_test(const char* model_filename)
   }
   assert(oss.view() == s);
 
-  llama_free_model(model);
+  llama_model_free(model);
 }
 
 

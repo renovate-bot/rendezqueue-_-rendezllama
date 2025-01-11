@@ -455,6 +455,6 @@ int main(int argc, char** argv)
     chat_traj.rollforget(chat_traj.token_count(), vocabulary);
   }
   if (ctx) {llama_free(ctx);}
-  if (model) {llama_free_model(model);}
+  if (model) {llama_model_free(model);}
   return exstatus;
 }

@@ -108,7 +108,7 @@ rendezllama::make_llama_context(rendezllama::ChatOptions& opt)
   model_params.use_mlock = opt.mlock_on;
   model_params.use_mmap = opt.mmap_on;
 
-  struct llama_model* model = llama_load_model_from_file(
+  struct llama_model* model = llama_model_load_from_file(
       opt.model_filename.c_str(), model_params);
   if (!model) {
     fildesh_log_error("Failed to open model.");
@@ -142,7 +142,7 @@ rendezllama::make_llama_context(rendezllama::ChatOptions& opt)
 
   struct llama_context* ctx = llama_new_context_with_model(model, ctx_params);
   if (!ctx) {
-    llama_free_model(model);
+    llama_model_free(model);
     fildesh_log_error("Failed to create context.");
     return std::make_tuple(nullptr, nullptr);
   }

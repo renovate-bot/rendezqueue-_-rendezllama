@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 
   llama_model_params model_params = llama_model_default_params();
   model_params.vocab_only = true;
-  llama_model* model = llama_load_model_from_file(model_filename, model_params);
+  llama_model* model = llama_model_load_from_file(model_filename, model_params);
 
   std::vector<Vocabulary::Token_id> tokens;
   Vocabulary vocabulary(model);
@@ -90,5 +90,6 @@ int main(int argc, char** argv)
       out << '\n';
     }
   }
+  if (model) {llama_model_free(model);}
   return exstatus;
 }

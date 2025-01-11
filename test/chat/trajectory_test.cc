@@ -195,13 +195,13 @@ int main(int argc, char** argv)
   rendezllama::GlobalScope rendezllama_global_scope;
   llama_model_params model_params = llama_model_default_params();
   model_params.vocab_only = true;
-  llama_model* model = llama_load_model_from_file(argv[1], model_params);
+  llama_model* model = llama_model_load_from_file(argv[1], model_params);
   assert(model);
 
   basic_test();
   rollforget_test(model);
   suffix_test(model);
 
-  llama_free_model(model);
+  llama_model_free(model);
   return 0;
 }
