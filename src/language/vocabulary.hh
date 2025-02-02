@@ -6,6 +6,7 @@
 
 struct FildeshO;
 struct llama_model;
+struct llama_vocab;
 
 namespace rendezllama {
 
@@ -47,7 +48,7 @@ class Vocabulary {
   }
 
  private:
-  const llama_model* model_;
+  const llama_vocab* vocab_ = nullptr;
   Token_id newline_token_id_;
 
   std::string bos_token_alias_;

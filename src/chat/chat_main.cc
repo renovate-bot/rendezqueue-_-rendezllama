@@ -93,13 +93,13 @@ int main(int argc, char** argv)
 
   if (exstatus == 0 && !opt.lora_filename.empty()) {
     const float scale = 1.0f;
-    struct llama_lora_adapter* lora = llama_lora_adapter_init(
+    struct llama_adapter_lora* lora = llama_adapter_lora_init(
         model, opt.lora_filename.c_str());
     if (lora) {
-      int istat = llama_lora_adapter_set(ctx, lora, scale);
+      int istat = llama_set_adapter_lora(ctx, lora, scale);
       if (istat != 0) {
         exstatus = 1;
-        llama_lora_adapter_free(lora);
+        llama_adapter_lora_free(lora);
       }
     }
   }
@@ -141,7 +141,7 @@ int main(int argc, char** argv)
     vocabulary.tokenize_to(priming_tokens, opt.priming_prompt);
     if (!priming_tokens.empty()) {
       auto begin = priming_tokens.begin();
-      if (0 != llama_add_bos_token(model)) {
+      if (0 != llama_vocab_get_add_bos(llama_model_get_vocab(model))) {
         if (*begin == vocabulary.bos_token_id()) {
           priming_tokens.erase(begin, begin+1);
         }

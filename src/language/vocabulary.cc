@@ -13,15 +13,15 @@ using rendezllama::Vocabulary;
 typedef Vocabulary::Token_id Token_id;
 
 Vocabulary::Vocabulary(const llama_model* model)
-  : model_(model)
 {
-  if (!model_) {return;}
+  if (!model) {return;}
+  vocab_ = llama_model_get_vocab(model);
 
   boundary_prefix_ = "☺";
   std::string text = boundary_prefix_ + '\n';
   std::vector<Token_id> tokens(text.size()+1);
   int n = llama_tokenize(
-      model_,
+      vocab_,
       text.data(), text.size(),
       tokens.data(), tokens.size(),
       /*add_bos=*/false,
@@ -32,21 +32,21 @@ Vocabulary::Vocabulary(const llama_model* model)
 }
 
 Token_id Vocabulary::bos_token_id() const {
-  if (!model_) {return 0;}
-  return llama_token_bos(model_);
+  if (!vocab_) {return 0;}
+  return llama_vocab_bos(vocab_);
 }
 Token_id Vocabulary::eos_token_id() const {
-  if (!model_) {return 0;}
-  return llama_token_eos(model_);
+  if (!vocab_) {return 0;}
+  return llama_vocab_eos(vocab_);
 }
 Token_id Vocabulary::newline_token_id() const {
-  if (!model_) {return 0;}
+  if (!vocab_) {return 0;}
   return newline_token_id_;
 }
 
 unsigned Vocabulary::cardinality() const {
-  if (!model_) {return 1;}
-  return llama_n_vocab(model_);
+  if (!vocab_) {return 1;}
+  return llama_vocab_n_tokens(vocab_);
 }
 
 char Vocabulary::last_char_of(Token_id token_id) const {
@@ -72,7 +72,8 @@ Vocabulary::detokenize_to(FildeshO* out, Token_id token_id) const
   char* s = grow_FildeshO(out, attempt_size);
 
   int n = llama_token_to_piece(
-      model_, token_id,
+      vocab_,
+      token_id,
       s, attempt_size,
       /*lstrip=*/0,
       /*special=*/false);
@@ -83,7 +84,8 @@ Vocabulary::detokenize_to(FildeshO* out, Token_id token_id) const
     out->size -= attempt_size;
     s = grow_FildeshO(out, n);
     n = llama_token_to_piece(
-        model_, token_id,
+        vocab_,
+        token_id,
         s, n,
         /*lstrip=*/0,
         /*special=*/false);
@@ -114,7 +116,7 @@ Vocabulary::tokenize_special(std::string_view s) const
   }
   Token_id token_id = 0;
   int n = llama_tokenize(
-      model_,
+      vocab_,
       s.data(), s.size(),
       &token_id, 1,
       /*add_bos=*/false,
@@ -130,7 +132,7 @@ static
 tokenize_append(
     std::vector<Token_id>& tokens,
     std::string_view text,
-    const llama_model* model,
+    const llama_vocab* vocab,
     const std::string_view boundary_prefix,
     const std::vector<Token_id>& boundary_prefix_tokens,
     std::string& tmp_s)
@@ -141,7 +143,7 @@ tokenize_append(
   size_t offset = tokens.size();
   tokens.resize(offset + tmp_s.size() + 1);
   int n = llama_tokenize(
-      model,
+      vocab,
       tmp_s.data(), tmp_s.size(),
       tokens.data()+offset, tokens.size()-offset,
       /*add_bos=*/false,
@@ -171,7 +173,7 @@ Vocabulary::tokenize_to(
   std::string tmp_s;
   std::string_view::size_type beg = 0;
   while (end != std::string_view::npos) {
-    tokenize_append(tokens, text.substr(beg, end-beg), model_,
+    tokenize_append(tokens, text.substr(beg, end-beg), vocab_,
                     boundary_prefix_, boundary_prefix_tokens_, tmp_s);
     beg = end;
     end = std::string_view::npos;
@@ -191,7 +193,7 @@ Vocabulary::tokenize_to(
       }
     }
   }
-  tokenize_append(tokens, text.substr(beg), model_,
+  tokenize_append(tokens, text.substr(beg), vocab_,
                   boundary_prefix_, boundary_prefix_tokens_, tmp_s);
 }
 

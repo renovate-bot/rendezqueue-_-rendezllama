@@ -116,7 +116,7 @@ rendezllama::make_llama_context(rendezllama::ChatOptions& opt)
   }
 
   if (opt.model_token_limit == 0) {
-    opt.model_token_limit = llama_n_ctx_train(model);
+    opt.model_token_limit = llama_model_n_ctx_train(model);
   }
   if (opt.context_token_limit == 0) {
     opt.context_token_limit = opt.model_token_limit;
@@ -130,7 +130,7 @@ rendezllama::make_llama_context(rendezllama::ChatOptions& opt)
   ctx_params.n_ctx = opt.context_token_limit;
   ctx_params.n_threads = opt.thread_count;
   ctx_params.n_batch = opt.batch_count;
-  ctx_params.rope_freq_scale = llama_rope_freq_scale_train(model);
+  ctx_params.rope_freq_scale = llama_model_rope_freq_scale_train(model);
   assert(ctx_params.rope_freq_scale > 0.0);
   while (
       (unsigned)(opt.model_token_limit / ctx_params.rope_freq_scale)
@@ -140,7 +140,7 @@ rendezllama::make_llama_context(rendezllama::ChatOptions& opt)
     ctx_params.rope_freq_scale /= 2;
   }
 
-  struct llama_context* ctx = llama_new_context_with_model(model, ctx_params);
+  struct llama_context* ctx = llama_init_from_model(model, ctx_params);
   if (!ctx) {
     llama_model_free(model);
     fildesh_log_error("Failed to create context.");
@@ -172,7 +172,8 @@ apply_sampler_chain(
       "\n", ":",
     };
     llama_sampler_init_dry(
-        model,
+        llama_model_get_vocab(model),
+        llama_model_n_ctx_train(model),
         dry->multiplier,
         dry->base,
         dry->allowed_length,
